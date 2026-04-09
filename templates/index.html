@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nami | AI Assistant</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --panel: rgba(255, 252, 247, 0.86);
+      --panel-strong: #fffaf2;
+      --line: rgba(91, 58, 28, 0.12);
+      --text: #2f2419;
+      --muted: #73614d;
+      --brand: #c55c32;
+      --brand-dark: #9c4320;
+      --brand-soft: #f4d2bc;
+      --user: linear-gradient(135deg, #cf6b3d, #b44b2c);
+      --bot: #ffffff;
+      --shadow: 0 20px 60px rgba(96, 60, 24, 0.14);
+      --radius: 26px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.85), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(232, 174, 132, 0.45), transparent 24%),
+        linear-gradient(180deg, #efe5d6 0%, #f8f4ec 42%, #efe8dd 100%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 248, 240, 0.82);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      background: linear-gradient(135deg, #ffd6bf, #ffe9d9);
+      color: var(--brand-dark);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .account {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .logout-link {
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.7);
+    }
+
+    .app-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .event-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 52vh;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .event-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(91, 58, 28, 0.08);
+    }
+
+    .event-card h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .event-meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .event-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill,
+    .mini-button,
+    .primary-button {
+      border: 0;
+      border-radius: 999px;
+      text-decoration: none;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.74);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    .mini-button {
+      padding: 8px 12px;
+      font-size: 12px;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .mini-button.warn {
+      color: #8c2d18;
+      background: #fff1eb;
+    }
+
+    .phone-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .phone-form input,
+    .composer textarea {
+      width: 100%;
+      border: 1px solid rgba(91, 58, 28, 0.14);
+      background: rgba(255,255,255,0.88);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font: inherit;
+      outline: none;
+    }
+
+    .phone-form input:focus,
+    .composer textarea:focus {
+      border-color: rgba(197, 92, 50, 0.55);
+      box-shadow: 0 0 0 3px rgba(197, 92, 50, 0.12);
+    }
+
+    .primary-button {
+      padding: 12px 18px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 20px 22px 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chat-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .chat-subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .suggestions {
+      padding: 12px 22px 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow: auto;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      display: flex;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.bot {
+      justify-content: flex-start;
+    }
+
+    .bubble {
+      max-width: min(720px, 86%);
+      padding: 14px 16px;
+      border-radius: 22px;
+      line-height: 1.55;
+      font-size: 15px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.bot .bubble {
+      background: var(--bot);
+      border-top-left-radius: 8px;
+      border: 1px solid rgba(91, 58, 28, 0.08);
+    }
+
+    .message.user .bubble {
+      color: #fff;
+      background: var(--user);
+      border-top-right-radius: 8px;
+      box-shadow: 0 14px 30px rgba(180, 75, 44, 0.28);
+    }
+
+    .typing .bubble {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .composer {
+      border-top: 1px solid var(--line);
+      padding: 18px 22px 22px;
+      background: rgba(255, 248, 241, 0.68);
+    }
+
+    .composer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .composer textarea {
+      min-height: 58px;
+      max-height: 180px;
+      resize: vertical;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .empty-state {
+      max-width: 460px;
+    }
+
+    .welcome {
+      min-height: calc(100vh - 48px);
+      display: grid;
+      place-items: center;
+    }
+
+    .welcome-card {
+      width: min(560px, calc(100vw - 32px));
+      padding: 36px;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      background: rgba(255, 250, 243, 0.92);
+      box-shadow: var(--shadow);
+      text-align: left;
+    }
+
+    .welcome-card h2 {
+      margin: 18px 0 8px;
+      font-size: 34px;
+    }
+
+    .welcome-card p,
+    .welcome-card li {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .welcome-card ul {
+      margin: 20px 0 28px;
+      padding-left: 20px;
+    }
+
+    .error-banner {
+      margin: 0 22px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #fff1eb;
+      border: 1px solid rgba(162, 53, 20, 0.14);
+      color: #8c2d18;
+      display: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: 2;
+      }
+
+      .chat-panel {
+        order: 1;
+        min-height: 72vh;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        padding: 14px;
+      }
+
+      .topbar,
+      .panel {
+        border-radius: 22px;
+      }
+
+      .topbar {
+        padding: 16px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand-mark {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .chat-header,
+      .chat-box,
+      .composer,
+      .section {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .suggestions {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .composer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bubble {
+        max-width: 92%;
+      }
+
+      .welcome-card {
+        padding: 28px 22px;
+      }
+
+      .welcome-card h2 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% if user %}
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">N</div>
+          <div>
+            <div class="eyebrow">Personal Assistant</div>
+            <h1>Nami</h1>
+            <div class="subtitle">Calendar, Gmail, and meeting support in one chat.</div>
+          </div>
+        </div>
+        <div class="account">
+          <span>{{ user.email }}</span>
+          <a class="logout-link" href="/auth/logout">Logout</a>
+        </div>
+      </header>
+
+      <main class="app-grid">
+        <aside class="panel sidebar">
+          <section class="section">
+            <div class="section-title">Upcoming Events</div>
+            <div class="event-list">
+              {% if events %}
+                {% for e in events %}
+                  <article class="event-card">
+                    <h3>{{ e.summary or "Untitled event" }}</h3>
+                    <div class="event-meta">
+                      {% if e.start.dateTime %}
+                        {{ e.start.dateTime[:16].replace("T", " ") }} IST
+                      {% else %}
+                        {{ e.start.date }}
+                      {% endif %}
+                    </div>
+                    {% if e.hangoutLink %}
+                      <div class="event-meta" style="margin-top: 6px;">
+                        <a href="{{ e.hangoutLink }}" target="_blank" rel="noreferrer">Open Google Meet</a>
+                      </div>
+                    {% endif %}
+                    <div class="event-actions">
+                      <a class="mini-button" href="/edit/{{ e.id }}">Edit</a>
+                      <form action="/delete/{{ e.id }}" method="post" onsubmit="return confirm('Delete this event?')">
+                        <button class="mini-button warn" type="submit">Delete</button>
+                      </form>
+                    </div>
+                  </article>
+                {% endfor %}
+              {% else %}
+                <div class="event-card">
+                  <div class="event-meta">No upcoming events yet. Ask Nami to create one from the chat.</div>
+                </div>
+              {% endif %}
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">WhatsApp Link</div>
+            <div class="pill">
+              {% if user.phone %}
+                Linked: +{{ user.phone }}
+              {% else %}
+                Not linked yet
+              {% endif %}
+            </div>
+            <form class="phone-form" action="/link-phone" method="post" style="margin-top: 14px;">
+              <input type="text" name="phone" value="{{ user.phone or '' }}" placeholder="Example: 919876543210">
+              <button class="primary-button" type="submit">
+                {% if user.phone %}Update Number{% else %}Link Number{% endif %}
+              </button>
+            </form>
+          </section>
+        </aside>
+
+        <section class="panel chat-panel">
+          <div class="chat-header">
+            <div>
+              <h2>Assistant Chat</h2>
+              <div class="chat-subtitle">Use plain English. Nami will route the request to Calendar, Gmail, or memory.</div>
+            </div>
+            <div class="pill">Live session</div>
+          </div>
+
+          <div class="suggestions">
+            <button class="mini-button" type="button" data-suggestion="What are my upcoming events?">Upcoming events</button>
+            <button class="mini-button" type="button" data-suggestion="Schedule a team meeting tomorrow at 3 PM">Create meeting</button>
+            <button class="mini-button" type="button" data-suggestion="Send an email to example@gmail.com about tomorrow's update">Send email</button>
+          </div>
+
+          <div id="error-banner" class="error-banner"></div>
+
+          <div id="chat-box" class="chat-box">
+            {% if history %}
+              {% for h in history %}
+                <div class="message {{ 'user' if h.role == 'user' else 'bot' }}">
+                  <div class="bubble">{{ h.message }}</div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="message bot">
+                <div class="bubble empty-state">I am Nami, your assistant for scheduling, Gmail, and quick personal context. Try asking about events, creating a meeting, or sending an email.</div>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="composer">
+            <div class="composer-grid">
+              <textarea id="msg-input" placeholder="Type your message here. Example: Move my design review to tomorrow at 5 PM."></textarea>
+              <button id="send-btn" class="primary-button" type="button">Send</button>
+            </div>
+            <div class="hint">Mobile and desktop both use the same `/chat` API now, including JSON requests.</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  {% else %}
+    <div class="shell welcome">
+      <section class="welcome-card">
+        <div class="pill">Google-connected assistant</div>
+        <h2>Nami keeps your demo simple.</h2>
+        <p>Log in once and use chat to create meetings, list events, send Gmail messages, and connect your WhatsApp number.</p>
+        <ul>
+          <li>Calendar and Google Meet support</li>
+          <li>Gmail sending through your account</li>
+          <li>Conversation memory for simple personal details</li>
+          <li>Responsive web UI for phone and desktop demos</li>
+        </ul>
+        <a class="primary-button" href="/auth/login" style="display: inline-block;">Login with Google</a>
+      </section>
+    </div>
+  {% endif %}
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const input = document.getElementById("msg-input");
+    const sendButton = document.getElementById("send-btn");
+    const errorBanner = document.getElementById("error-banner");
+
+    function scrollChatToBottom() {
+      if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function appendMessage(role, text, extraClass = "") {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${role} ${extraClass}`.trim();
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+
+      wrapper.appendChild(bubble);
+      chatBox.appendChild(wrapper);
+      scrollChatToBottom();
+      return wrapper;
+    }
+
+    function setError(message) {
+      if (!errorBanner) return;
+      if (!message) {
+        errorBanner.style.display = "none";
+        errorBanner.textContent = "";
+        return;
+      }
+      errorBanner.style.display = "block";
+      errorBanner.textContent = message;
+    }
+
+    async function sendMessage() {
+      if (!input || !sendButton) return;
+
+      const text = input.value.trim();
+      if (!text) return;
+
+      setError("");
+      appendMessage("user", text);
+      input.value = "";
+      sendButton.disabled = true;
+      sendButton.textContent = "Sending...";
+
+      const typing = appendMessage("bot", "Nami is thinking...", "typing");
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          credentials: "same-origin",
+          body: JSON.stringify({ message: text })
+        });
+
+        const data = await response.json().catch(() => null);
+        typing.remove();
+
+        if (!response.ok) {
+          const errorText = data?.error || `Request failed with status ${response.status}.`;
+          setError(errorText);
+          appendMessage("bot", errorText);
+          return;
+        }
+
+        appendMessage("bot", data?.reply || "I did not receive a reply.");
+      } catch (error) {
+        typing.remove();
+        const message = "Network error. Check the server and try again.";
+        setError(message);
+        appendMessage("bot", message);
+      } finally {
+        sendButton.disabled = false;
+        sendButton.textContent = "Send";
+        input.focus();
+      }
+    }
+
+    if (input) {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          sendMessage();
+        }
+      });
+      input.focus();
+    }
+
+    if (sendButton) {
+      sendButton.addEventListener("click", sendMessage);
+    }
+
+    document.querySelectorAll("[data-suggestion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!input) return;
+        input.value = button.getAttribute("data-suggestion") || "";
+        input.focus();
+      });
+    });
+
+    scrollChatToBottom();
+  </script>
+</body>
+</html>
