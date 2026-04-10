@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Event | Nami</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23ffe1cf'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-family='Segoe UI, Arial, sans-serif' font-size='34' fill='%239d4220'%3EN%3C/text%3E%3C/svg%3E">
   <style>
     :root {
       --bg: #f5eee4;
@@ -24,7 +25,7 @@
       min-height: 100vh;
       display: grid;
       place-items: center;
-      padding: 24px;
+      padding: 16px;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       color: var(--text);
       background:
@@ -128,6 +129,37 @@
       color: var(--text);
       border: 1px solid var(--line);
       background: rgba(255,255,255,0.72);
+    }
+
+    @media (max-width: 640px) {
+      body {
+        display: block;
+        padding: 12px;
+      }
+
+      .card {
+        width: 100%;
+        border-radius: 22px;
+      }
+
+      .header,
+      .content {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .actions button,
+      .actions a {
+        width: 100%;
+        text-align: center;
+      }
     }
   </style>
 </head>
